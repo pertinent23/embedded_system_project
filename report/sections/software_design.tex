@@ -1,0 +1,83 @@
+\section{Software Design}
+The software was developed in C using the MPLAB XC8 compiler. The architecture is designed around an infinite main loop supplemented by a precise interrupt-driven time base.
+
+\subsection{System Logic and State Machine}
+The software architecture is governed by a finite state machine (FSM) that dictates the system behavior based on user inputs and sensor data. The following diagram represents the logic flow implemented in the \texttt{Update\allowbreak\_Display} and \texttt{System\allowbreak\_Control\allowbreak\_Logic} functions.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2cm and 3cm,
+    state/.style={rectangle, rounded corners, draw=black, very thick, minimum width=3.5cm, minimum height=1.2cm, text centered, font=\sffamily\bfseries},
+    standby/.style={state, fill=red!10},
+    active/.style={state, fill=green!10},
+    manual/.style={state, fill=blue!10},
+    info/.style={state, fill=orange!10},
+    arrow/.style={-stealth, thick, font=\footnotesize\itshape}
+]
+
+    % Nodes
+    \node[standby] (STB) {STANDBY MODE};
+    \node[active, right=of STB] (AUTO) {AUTO CONTROL};
+    \node[info, above=of AUTO] (INFO) {INFO SLIDESHOW};
+    \node[manual, below=of AUTO] (MAN) {MANUAL OVERRIDE};
+
+    % Transitions
+    \draw[arrow] (STB.10) -- node[above] {SW1: ON} (AUTO.170);
+    \draw[arrow] (AUTO.190) -- node[below] {SW1: OFF} (STB.350);
+    
+    \draw[arrow] (AUTO.70) -- node[left] {SW3 Pressed} (INFO.290);
+    \draw[arrow] (INFO.250) -- node[right] {SW3 Released} (AUTO.110);
+    
+    \draw[arrow] (AUTO.290) -- node[left] {SW2 Pressed} (MAN.70);
+    \draw[arrow] (MAN.110) -- node[right] {SW2 Released} (AUTO.250);
+
+\end{tikzpicture}
+\caption{System State Machine Diagram.}
+\end{figure}
+
+\subsubsection{Detailed State Descriptions}
+\begin{itemize} \sloppy
+    \item \textbf{STANDBY MODE (System Off):} This is the safety state. When the \texttt{SW\allowbreak\_SYSTEM\allowbreak\_OFF} switch is high (Logic 1), the system disables the pump and enters a low-power display mode. A 4-second timeout (\texttt{SLEEP\allowbreak\_DELAY}) is used to turn off the LCD backlight to conserve energy.
+    \item \textbf{AUTO CONTROL (Normal Dashboard):} The default operational state. The system displays the soil moisture percentage and handles the pump activation using hysteresis logic. It is the central hub for all other active modes.
+    \item \textbf{MANUAL OVERRIDE:} Triggered by holding the \texttt{SW\allowbreak\_MANUAL\allowbreak\_PUMP} button. In this state, the pump is forced ON regardless of sensor readings. The LCD displays a real-time chronometer tracking the duration of the manual irrigation.
+    \item \textbf{INFO SLIDESHOW:} Triggered by holding the \texttt{SW\allowbreak\_INFO\allowbreak\_MODE} button. This mode provides technical diagnostics across four rotating screens: Time/Date, Hardware Diagnostics (RAW ADC), System Configuration, and Uptime statistics.
+\end{itemize}
+
+\subsubsection{Transition Logic}
+The transitions are prioritized and checked during each iteration of the main loop:
+\begin{enumerate} \sloppy
+    \item \textbf{Master Transition:} The transition to \textit{Standby} has the highest priority. If \texttt{SW\allowbreak\_SYSTEM\allowbreak\_OFF} is detected, the system immediately exits any other mode.
+    \item \textbf{Active Mode Switching:} If the system is ON, it monitors the state of buttons \texttt{SW2} and \texttt{SW3}. These transitions are "state-dependent": the system only enters \textit{Manual} or \textit{Info} modes if it is not already in a higher-priority state.
+    \item \textbf{Automatic Return:} Once a button (\texttt{SW2} or \texttt{SW3}) is released, the system automatically returns to the \textit{Auto Control} state, ensuring continuous monitoring of the plant's health.
+\end{enumerate}
+
+\subsection{Hysteresis Algorithm}
+To prevent "short-cycling" (the pump turning on and off rapidly when near the threshold), a hysteresis logic was implemented:
+\begin{itemize}
+    \item \textbf{Activation Threshold:} 40\% humidity.
+    \item \textbf{Deactivation Threshold:} 85\% humidity.
+\end{itemize}
+This ensures that once irrigation starts, it continues until the soil is significantly saturated, improving motor longevity and irrigation efficiency.
+
+\subsection{Data Acquisition and Filtering}
+The capacitive sensor output is an analog voltage processed by the 12-bit ADC. To eliminate electrical noise, a moving average filter is applied:
+\begin{equation}
+    V_{\text{filtered}} = \frac{1}{N} \sum_{i=1}^{N} V_{\text{raw},i} \quad \text{where } N=100
+\end{equation}
+The raw value is then mapped to a percentage based on calibration points: 4095 (completely dry) and 750 (completely saturated).
+
+\subsection{Flicker-Free Display Management}
+A common issue in embedded LCD systems is screen flickering caused by frequent use of the \texttt{LCD\_Clear()} command. To provide a professional user experience, this project implements a flicker-free rendering strategy:
+\begin{itemize}
+    \item \textbf{Fixed-Length Buffers:} Two character arrays, \texttt{lcd\_line1} and \texttt{lcd\_line2}, each 17 characters long (16 for the text + 1 for the null terminator), are used as a software frame-buffer.
+    \item \textbf{String Formatting:} The \texttt{sprintf()} function is used to compose entire lines at once. By using format specifiers like \texttt{\%3u} (for humidity) or manually padding with spaces, every line sent to the LCD is exactly 16 characters long.
+    \item \textbf{Direct Overwriting:} Instead of clearing the screen, the cursor is reset to the beginning of the line, and the new 16-character buffer is written directly over the old data. This ensures that only the modified characters change on the screen, completely eliminating the blink associated with clearing the display.
+\end{itemize}
+
+\subsection{Low-level Drivers}
+\subsubsection{I2C Bit-Banging}
+Due to the specific pinout requirements and to maintain full control over the protocol timing, the I2C communication with the LCD was implemented using a "Bit-Banging" technique on PORTC. This involves manually toggling the SCL and SDA lines to mimic the I2C protocol, allowing the use of pins that might not be connected to the hardware MSSP module.
+
+\subsubsection{Timer0 Interrupt}
+Timer0 is configured in 16-bit mode with a prescaler of 1:256. It generates an interrupt every 1 second, which serves as the "heartbeat" of the system, updating the software Real-Time Clock (RTC) and handling the slideshow timers.

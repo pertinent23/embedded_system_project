@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/franck/Bureau/code/c/embedded-system/_build/embedded_system/default",
+  "command": "/opt/microchip/xc8/v3.10/bin/xc8-cc -DXPRJ_default=default -D__18F47Q84__ -D__DEBUG=1 -I/home/franck/Bureau/code/c/embedded-system/cmake/embedded_system/default/../../.. -c -mcpu=18F47Q84 -mdfp=/home/franck/.mchp_packs/Microchip/PIC18F-Q_DFP/1.27.449/xc8 -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -mwarn=-3 -Wa,-a -msummary=-psect,-class,+mem,-hex,-file -ginhx32 -Wl,--data-init -mno-keep-startup -mno-download -mno-default-config-bits -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -o CMakeFiles/embedded_system_default_default_XC8_compile.dir/home/franck/Bureau/code/c/embedded-system/newmain.c.p1 -c /home/franck/Bureau/code/c/embedded-system/newmain.c",
+  "file": "/home/franck/Bureau/code/c/embedded-system/newmain.c",
+  "output": "/home/franck/Bureau/code/c/embedded-system/_build/embedded_system/default/CMakeFiles/embedded_system_default_default_XC8_compile.dir/home/franck/Bureau/code/c/embedded-system/newmain.c.p1"
+}
+]

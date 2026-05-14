@@ -1,0 +1,3 @@
+{
+    "mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/embedded_system/default"
+}

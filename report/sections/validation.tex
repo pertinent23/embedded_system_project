@@ -1,0 +1,25 @@
+\section{Validation and Results}
+The system was subjected to a series of tests to validate its functional and technical requirements.
+
+\subsection{Functional Validation}
+\begin{itemize}
+    \item \textbf{Automatic Irrigation:} The system correctly identified dry soil conditions (below 40\%) and activated the pump. The irrigation stopped reliably once the 85\% threshold was reached.
+    \item \textbf{Manual Override:} The manual button (\texttt{RB1}) successfully bypassed the sensor logic, allowing for manual watering with an accurate time-on display.
+    \item \textbf{Standby Mode:} The \texttt{RB0} switch correctly disabled all active components and entered a standby state, reducing the power footprint of the system.
+\end{itemize}
+
+\subsection{Technical Analysis}
+\subsubsection{Timing Accuracy}
+The software RTC, driven by Timer0 interrupts, was compared against a standard stopwatch over a 10-minute period. The drift was negligible (less than 1 second), confirming the accuracy of the 64MHz internal oscillator and the timer reload values (\texttt{0x0BDC}).
+
+\subsubsection{Calibration Accuracy}
+The mapping from 12-bit ADC values to percentage was validated using three samples:
+\begin{enumerate}
+    \item \textbf{Air (Dry):} ADC result $\sim$4090 $\rightarrow$ 0\% Displayed.
+    \item \textbf{Saturated Soil (Wet):} ADC result $\sim$760 $\rightarrow$ 100\% Displayed.
+    \item \textbf{Damp Soil:} ADC result $\sim$2400 $\rightarrow$ $\sim$48\% Displayed.
+\end{enumerate}
+These results confirm the linearity and accuracy of the mapping formula implemented in the firmware.
+
+\subsection{System Stability}
+After 48 hours of continuous operation, the system showed no signs of freezing or latch-up. The uptime counter correctly tracked the hours of operation, and the LCD maintained its clarity without initialization errors, proving the robustness of the I2C bit-banging implementation.
