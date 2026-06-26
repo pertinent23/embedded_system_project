@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Arrosage Intelligent</title>
+    <!-- Chargement de Chart.js pour le graphique -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #4CAF50;
+            --accent: #2196F3;
+            --danger: #f44336;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-weight: 300;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        /* Styles de la grille des contrôles */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .control-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            border-top: 4px solid var(--primary);
+            transition: transform 0.2s ease;
+        }
+
+        .control-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .control-card h3 {
+            margin-top: 0;
+            color: #ccc;
+        }
+
+        /* Styles des Boutons */
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #888;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+        }
+
+        button:hover {
+            filter: brightness(1.3);
+            color: #fff;
+        }
+
+        button.active {
+            color: white;
+            border: 2px solid white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            font-weight: 800;
+        }
+
+        /* Les couleurs ne s'activent que si le bouton est pressé (.active) */
+        .btn-on.active {
+            background-color: var(--primary);
+        }
+
+        .btn-off.active {
+            background-color: var(--danger);
+        }
+
+        .btn-phys.active {
+            background-color: var(--accent);
+        }
+
+        /* Style du Graphique */
+        .chart-container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            position: relative;
+            height: 40vh;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🌱 Dashboard Smart Watering</h1>
+
+        <!-- Panneau de Commandes Prioritaires Réseau -->
+        <div class="controls-grid">
+
+            <div class="control-card" id="card-sys_off">
+                <h3>Système Général</h3>
+                <button class="btn-on" onclick="setButton('sys_off', 0)">Activer Forcé (ON)</button>
+                <button class="btn-off" onclick="setButton('sys_off', 1)">Couper Forcé (OFF)</button>
+                <button class="btn-phys" onclick="setButton('sys_off', 2)">Contrôle Physique (Local)</button>
+            </div>
+
+            <div class="control-card" id="card-manual_pump">
+                <h3>Pompe Manuelle</h3>
+                <button class="btn-on" onclick="setButton('manual_pump', 0)">Allumer Pompe</button>
+                <button class="btn-off" onclick="setButton('manual_pump', 1)">Couper Pompe</button>
+                <button class="btn-phys" onclick="setButton('manual_pump', 2)">Contrôle Physique (Local)</button>
+            </div>
+
+            <div class="control-card" id="card-info_mode">
+                <h3>Écran Info</h3>
+                <button class="btn-on" onclick="setButton('info_mode', 0)">Forcer Mode Info</button>
+                <button class="btn-off" onclick="setButton('info_mode', 1)">Forcer Mode Normal</button>
+                <button class="btn-phys" onclick="setButton('info_mode', 2)">Contrôle Physique (Local)</button>
+            </div>
+
+        </div>
+
+        <!-- Graphique d'humidité -->
+        <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Initialisation de Chart.js
+        const ctx = document.getElementById('humidityChart').getContext('2d');
+        const humidityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Humidité de la Terre (%)',
+                    data: [],
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.15)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#4CAF50',
+                    pointRadius: 4,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        grid: { color: '#333' },
+                        ticks: { color: '#ccc' }
+                    },
+                    x: {
+                        grid: { color: '#333' },
+                        ticks: { color: '#ccc' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#fff', font: { size: 14 } } }
+                }
+            }
+        });
+
+        // Fonction pour récupérer l'historique et mettre à jour le graphique
+        async function fetchChartData() {
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+
+                // Extraction des labels (Heure) et des valeurs
+                const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+                const values = data.map(d => d.value);
+
+                humidityChart.data.labels = labels;
+                humidityChart.data.datasets[0].data = values;
+                humidityChart.update();
+            } catch (error) {
+                console.error("Erreur lors de la mise à jour du graphique:", error);
+            }
+        }
+
+        // Fonction pour envoyer un ordre depuis les boutons
+        async function setButton(name, value) {
+            try {
+                await fetch(`/api/button/${name}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ value })
+                });
+                updateUIState(name, value);
+            } catch (error) {
+                console.error("Erreur lors de l'envoi de la commande:", error);
+            }
+        }
+
+        // Met à jour visuellement les boutons actifs (bordures blanches)
+        function updateUIState(name, value) {
+            const card = document.getElementById(`card-${name}`);
+            const buttons = card.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttons[value].classList.add('active'); // Les boutons sont dans l'ordre 0, 1, 2 dans le HTML
+        }
+
+        // Fonction pour récupérer l'état actuel depuis le serveur et mettre à jour les boutons
+        async function fetchStateData() {
+            try {
+                const stateRes = await fetch('/api/state');
+                const state = await stateRes.json();
+
+                updateUIState('sys_off', state.sys_off);
+                updateUIState('manual_pump', state.manual_pump);
+                updateUIState('info_mode', state.info_mode);
+            } catch (error) {
+                console.error("Erreur lors de la récupération de l'état:", error);
+            }
+        }
+
+        // Actualise la page (État actuel et Graphique)
+        function initDashboard() {
+            // Première récupération immédiate
+            fetchStateData();
+            fetchChartData();
+
+            // Interrogation périodique (Polling)
+            setInterval(fetchStateData, 1000);  // Vérifie l'état des boutons toutes les secondes
+            setInterval(fetchChartData, 2000);  // Vérifie l'humidité toutes les 2 secondes
+        }
+
+        // Lancement
+        window.onload = initDashboard;
+    </script>
+</body>
+
+</html>
