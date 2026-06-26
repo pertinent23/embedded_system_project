@@ -148,6 +148,18 @@
 
         </div>
 
+        <!-- Contrôle de la fréquence de mise à jour (Polling) -->
+        <div class="settings-card" style="background-color: var(--card-bg); padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: space-between;">
+            <label for="pollRate" style="font-weight: bold; font-size: 16px;">⏱️ Fréquence d'actualisation (Page Web) :</label>
+            <select id="pollRate" onchange="updatePollingRate()" style="padding: 10px; border-radius: 8px; background: #333; color: white; border: 1px solid #555; font-size: 14px; cursor: pointer;">
+                <option value="1000">Rapide (1 seconde)</option>
+                <option value="2000" selected>Normale (2 secondes)</option>
+                <option value="5000">Lente (5 secondes)</option>
+                <option value="10000">Très lente (10 secondes)</option>
+                <option value="0">Désactivée (Manuel)</option>
+            </select>
+        </div>
+
         <!-- Graphique d'humidité -->
         <div class="chart-container">
             <canvas id="humidityChart"></canvas>
@@ -248,15 +260,35 @@
             }
         }
 
+        let stateInterval;
+        let chartInterval;
+
+        // Met à jour la fréquence d'interrogation du serveur
+        function updatePollingRate() {
+            // Nettoie les anciens chronomètres
+            clearInterval(stateInterval);
+            clearInterval(chartInterval);
+            
+            const rate = parseInt(document.getElementById('pollRate').value);
+            
+            if (rate > 0) {
+                // Relance avec la nouvelle fréquence
+                stateInterval = setInterval(fetchStateData, rate);
+                chartInterval = setInterval(fetchChartData, rate);
+                console.log(`[SYS] Fréquence d'actualisation réglée sur ${rate}ms`);
+            } else {
+                console.log(`[SYS] Actualisation automatique désactivée`);
+            }
+        }
+
         // Actualise la page (État actuel et Graphique)
         function initDashboard() {
             // Première récupération immédiate
             fetchStateData();
             fetchChartData();
 
-            // Interrogation périodique (Polling)
-            setInterval(fetchStateData, 1000);  // Vérifie l'état des boutons toutes les secondes
-            setInterval(fetchChartData, 2000);  // Vérifie l'humidité toutes les 2 secondes
+            // Initialise le polling avec la valeur du menu déroulant
+            updatePollingRate();
         }
 
         // Lancement
