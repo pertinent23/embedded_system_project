@@ -4,114 +4,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Arrosage Intelligent</title>
-    <!-- Chargement de Chart.js pour le graphique -->
+    <title>Dashboard Arrosage Connecté</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --primary: #4CAF50;
-            --accent: #2196F3;
-            --danger: #f44336;
-            --text: #ffffff;
+            --bg-color: #0a0a0c;
+            --card-bg: rgba(20, 20, 25, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #00E676;
+            --accent: #00B0FF;
+            --danger: #FF1744;
+            --text: #f5f5f7;
+            --text-muted: #8e8e93;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, #151525 0%, #0a0a0c 100%);
             color: var(--text);
             margin: 0;
-            padding: 20px;
-            text-align: center;
+            padding: 20px 10px;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
-        h1 {
-            font-weight: 300;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
+        /* Header design premium */
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
         }
 
-        /* Styles de la grille des contrôles */
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #fff 30%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Badge Synchro Temps */
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 176, 255, 0.1);
+            border: 1px solid rgba(0, 176, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(0, 176, 255, 0.15);
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .col-left {
+            grid-column: span 5;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .col-right {
+            grid-column: span 7;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .col-left, .col-right {
+                grid-column: span 12;
+            }
+        }
+
+        /* Cards style Glassmorphism */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        /* --- SECTION RETRO LCD SCREEN --- */
+        .lcd-bezel {
+            background: #1e1e24;
+            border: 10px solid #141416;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .lcd-screen {
+            background-color: #00ff66; /* Vert LCD rétroéclairé */
+            color: #0a200a;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.7rem;
+            line-height: 1.35;
+            letter-spacing: 2px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.65);
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+            transition: background-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        /* Style écran éteint */
+        .lcd-screen.off {
+            background-color: #142418;
+            color: #1a2b1f;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.95);
+            text-shadow: none;
+        }
+
+        .lcd-line {
+            white-space: pre;
+            min-height: 32px;
+            display: block;
+        }
+
+        /* --- ACTUATEURS LUMINEUX (LEDs & Pompe) --- */
+        .actuators-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px 0;
+            gap: 15px;
+        }
+
+        .actuator-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .actuator-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Le corps lumineux de la LED */
+        .led-light {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 4px solid #1c1c22;
+            background-color: #24242e;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        /* Reflet réaliste sur la LED */
+        .led-light::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            width: 12px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: rotate(-15deg);
+        }
+
+        /* États LED Active */
+        .led-light.green.active {
+            background-color: var(--primary);
+            border-color: #98ffb9;
+            box-shadow: 0 0 30px var(--primary), inset 0 2px 4px rgba(255,255,255,0.6);
+        }
+
+        .led-light.red.active {
+            background-color: var(--danger);
+            border-color: #ff98a5;
+            box-shadow: 0 0 30px var(--danger), inset 0 2px 4px rgba(255,255,255,0.6);
+        }
+
+        .led-light.blue.active {
+            background-color: var(--accent);
+            border-color: #82d3ff;
+            box-shadow: 0 0 30px var(--accent), inset 0 2px 4px rgba(255,255,255,0.6);
+            animation: pulse-pump 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-pump {
+            from { box-shadow: 0 0 20px var(--accent); transform: scale(1); }
+            to { box-shadow: 0 0 35px var(--accent); transform: scale(1.05); }
+        }
+
+        /* --- CONTROLES / BOUTONS --- */
         .controls-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 40px;
         }
 
-        .control-card {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-            border-top: 4px solid var(--primary);
-            transition: transform 0.2s ease;
+        .control-group {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .control-card:hover {
-            transform: translateY(-5px);
+        .group-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-align: left;
+            margin-bottom: 5px;
         }
 
-        .control-card h3 {
-            margin-top: 0;
-            color: #ccc;
-        }
-
-        /* Styles des Boutons */
-        button {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
+        .control-btn {
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 10px;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: #888;
-            background-color: #2a2a2a;
-            border: 1px solid #444;
+            transition: all 0.25s ease;
         }
 
-        button:hover {
-            filter: brightness(1.3);
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.08);
             color: #fff;
         }
 
-        button.active {
-            color: white;
-            border: 2px solid white;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            font-weight: 800;
+        .control-btn.active {
+            color: #fff;
+            border-width: 1.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Les couleurs ne s'activent que si le bouton est pressé (.active) */
+        /* Couleur spécifique des boutons selon la sélection active */
         .btn-on.active {
             background-color: var(--primary);
+            border-color: #a3ffce;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
         }
 
         .btn-off.active {
             background-color: var(--danger);
+            border-color: #ff9dae;
+            box-shadow: 0 4px 15px rgba(255, 23, 68, 0.3);
         }
 
         .btn-phys.active {
             background-color: var(--accent);
+            border-color: #92dbff;
+            box-shadow: 0 4px 15px rgba(0, 176, 255, 0.3);
         }
 
-        /* Style du Graphique */
-        .chart-container {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        /* --- POLLING SELECT --- */
+        .select-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .custom-select {
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .custom-select:hover {
+            border-color: var(--accent);
+        }
+
+        /* --- GRAPH CONTAINER --- */
+        .chart-wrapper {
             position: relative;
-            height: 40vh;
+            height: 320px;
             width: 100%;
         }
     </style>
@@ -120,67 +364,134 @@
 <body>
 
     <div class="container">
-        <h1>🌱 Dashboard Smart Watering</h1>
+        <!-- En-tête -->
+        <header>
+            <h1>🌱 Dashboard Smart Watering</h1>
+            <p>Supervision et télécontrôle IoT en temps réel du PIC18F47Q84</p>
+            <div class="sync-badge">
+                <span class="sync-dot"></span>
+                Synchro Système : <span id="sync-time-lbl">--:-- (--/--)</span>
+            </div>
+        </header>
 
-        <!-- Panneau de Commandes Prioritaires Réseau -->
-        <div class="controls-grid">
+        <!-- Grille principale -->
+        <div class="dashboard-grid">
 
-            <div class="control-card" id="card-sys_off">
-                <h3>Système Général</h3>
-                <button class="btn-on" onclick="setButton('sys_off', 0)">Activer Forcé (ON)</button>
-                <button class="btn-off" onclick="setButton('sys_off', 1)">Couper Forcé (OFF)</button>
-                <button class="btn-phys" onclick="setButton('sys_off', 2)">Contrôle Physique (Local)</button>
+            <!-- Colonne gauche : Rendu Matériel -->
+            <div class="col-left">
+
+                <!-- Émulateur Écran LCD 16x2 -->
+                <div class="glass-card">
+                    <h3 class="card-title">📟 Écran LCD 16x2 Physique</h3>
+                    <div class="lcd-bezel">
+                        <div class="lcd-screen" id="lcd-screen">
+                            <span class="lcd-line" id="lcd-line-1">  FIRMWARE V3.1 </span>
+                            <span class="lcd-line" id="lcd-line-2"> Initialisation </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actuateurs lumineux -->
+                <div class="glass-card">
+                    <h3 class="card-title">💡 Actionneurs Physiques</h3>
+                    <div class="actuators-container">
+                        <div class="actuator-node">
+                            <div class="led-light green" id="led-green-light"></div>
+                            <span class="actuator-label">LED Verte</span>
+                        </div>
+                        <div class="actuator-node">
+                            <div class="led-light red" id="led-red-light"></div>
+                            <span class="actuator-label">LED Rouge</span>
+                        </div>
+                        <div class="actuator-node">
+                            <div class="led-light blue" id="pump-light"></div>
+                            <span class="actuator-label">Pompe</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Polling -->
+                <div class="glass-card" style="padding: 20px 25px;">
+                    <div class="select-container">
+                        <label style="font-weight: 600; font-size: 0.95rem; color: var(--text-muted);">⏱️ FREQUENCE DE RAFAICHISSEMENT :</label>
+                        <select id="pollRate" onchange="updatePollingRate(true)" class="custom-select">
+                            <option value="1000">1 seconde</option>
+                            <option value="2000" selected>2 secondes</option>
+                            <option value="5000">5 secondes</option>
+                            <option value="10000">10 secondes</option>
+                        </select>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="control-card" id="card-manual_pump">
-                <h3>Pompe Manuelle</h3>
-                <button class="btn-on" onclick="setButton('manual_pump', 0)">Allumer Pompe</button>
-                <button class="btn-off" onclick="setButton('manual_pump', 1)">Couper Pompe</button>
-                <button class="btn-phys" onclick="setButton('manual_pump', 2)">Contrôle Physique (Local)</button>
-            </div>
+            <!-- Colonne droite : Contrôles & Graphique -->
+            <div class="col-right">
 
-            <div class="control-card" id="card-info_mode">
-                <h3>Écran Info</h3>
-                <button class="btn-on" onclick="setButton('info_mode', 0)">Forcer Mode Info</button>
-                <button class="btn-off" onclick="setButton('info_mode', 1)">Forcer Mode Normal</button>
-                <button class="btn-phys" onclick="setButton('info_mode', 2)">Contrôle Physique (Local)</button>
+                <!-- Commandes prioritaires réseau -->
+                <div class="glass-card">
+                    <h3 class="card-title">🎮 Commandes Réseau Prioritaires</h3>
+                    <div class="controls-grid">
+
+                        <div class="control-group" id="card-sys_off">
+                            <span class="group-title">Système Général</span>
+                            <button class="control-btn btn-on" onclick="setButton('sys_off', 0)">FORCER ON</button>
+                            <button class="control-btn btn-off" onclick="setButton('sys_off', 1)">FORCER OFF</button>
+                            <button class="control-btn btn-phys" onclick="setButton('sys_off', 2)">PHYSIQUE LOCAL</button>
+                        </div>
+
+                        <div class="control-group" id="card-manual_pump">
+                            <span class="group-title">Pompe Manuelle</span>
+                            <button class="control-btn btn-on" onclick="setButton('manual_pump', 0)">PULSER ON</button>
+                            <button class="control-btn btn-off" onclick="setButton('manual_pump', 1)">PULSER OFF</button>
+                            <button class="control-btn btn-phys" onclick="setButton('manual_pump', 2)">PHYSIQUE LOCAL</button>
+                        </div>
+
+                        <div class="control-group" id="card-info_mode">
+                            <span class="group-title">Affichage LCD</span>
+                            <button class="control-btn btn-on" onclick="setButton('info_mode', 0)">DIAPORAMA ON</button>
+                            <button class="control-btn btn-off" onclick="setButton('info_mode', 1)">DIAPORAMA OFF</button>
+                            <button class="control-btn btn-phys" onclick="setButton('info_mode', 2)">PHYSIQUE LOCAL</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Historique graphique -->
+                <div class="glass-card">
+                    <h3 class="card-title">📈 Historique d'Humidité du Sol</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="humidityChart"></canvas>
+                    </div>
+                </div>
+
             </div>
 
         </div>
-
-        <!-- Contrôle de la fréquence de mise à jour (Polling) -->
-        <div class="settings-card" style="background-color: var(--card-bg); padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: space-between;">
-            <label for="pollRate" style="font-weight: bold; font-size: 16px;">⏱️ Fréquence d'actualisation (Page Web) :</label>
-            <select id="pollRate" onchange="updatePollingRate()" style="padding: 10px; border-radius: 8px; background: #333; color: white; border: 1px solid #555; font-size: 14px; cursor: pointer;">
-                <option value="1000">Rapide (1 seconde)</option>
-                <option value="2000" selected>Normale (2 secondes)</option>
-                <option value="5000">Lente (5 secondes)</option>
-                <option value="10000">Très lente (10 secondes)</option>
-                <option value="0">Désactivée (Manuel)</option>
-            </select>
-        </div>
-
-        <!-- Graphique d'humidité -->
-        <div class="chart-container">
-            <canvas id="humidityChart"></canvas>
-        </div>
+        <!-- Pied de page avec dernière synchronisation d'humidité -->
+        <footer style="margin-top: 40px; margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted); text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+            📡 Dernière requête d'humidité reçue : <span id="last-hum-req-time" style="font-weight: 600; color: var(--text);">--/--/---- à --:--:--</span>
+        </footer>
     </div>
 
     <script>
-        // Initialisation de Chart.js
+        // Initialisation de Chart.js avec design assorti
         const ctx = document.getElementById('humidityChart').getContext('2d');
         const humidityChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Humidité de la Terre (%)',
+                    label: 'Humidité (%)',
                     data: [],
-                    borderColor: '#4CAF50',
-                    backgroundColor: 'rgba(76, 175, 80, 0.15)',
+                    borderColor: '#00E676',
+                    backgroundColor: 'rgba(0, 230, 118, 0.08)',
                     borderWidth: 3,
-                    pointBackgroundColor: '#4CAF50',
-                    pointRadius: 4,
+                    pointBackgroundColor: '#00E676',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1.5,
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7,
                     fill: true,
                     tension: 0.4
                 }]
@@ -192,69 +503,241 @@
                     y: {
                         min: 0,
                         max: 100,
-                        grid: { color: '#333' },
-                        ticks: { color: '#ccc' }
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: '#8e8e93', font: { family: 'Outfit', size: 12 } }
                     },
                     x: {
-                        grid: { color: '#333' },
-                        ticks: { color: '#ccc' }
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: '#8e8e93', font: { family: 'Outfit', size: 12 } }
                     }
                 },
                 plugins: {
-                    legend: { labels: { color: '#fff', font: { size: 14 } } }
+                    legend: { display: false }
                 }
             }
         });
 
-        // Fonction pour récupérer l'historique et mettre à jour le graphique
+        // États locaux de simulation pour l'émulateur LCD
+        let currentSystemState = null;
+        let clientOffSeconds = 0;
+        let clientManualChrono = 0;
+        let clientUptime = 0;
+        let clientOffSlide = 0;
+        let clientInfoSlide = 0;
+        let slideSeconds = 0;
+
+        // Horloge autonome de simulation (synchronisée sur 1 seconde)
+        setInterval(() => {
+            slideSeconds++;
+            if (slideSeconds >= 4) {
+                slideSeconds = 0;
+                clientInfoSlide = (clientInfoSlide + 1) % 4;
+                clientOffSlide = (clientOffSlide + 1) % 2;
+            }
+
+            if (currentSystemState) {
+                // Le PIC éteint la verte et allume la rouge en veille
+                const isOff = (currentSystemState.led_red === 1 && currentSystemState.led_green === 0);
+                if (isOff) {
+                    clientOffSeconds++;
+                    clientManualChrono = 0;
+                } else {
+                    clientOffSeconds = 0;
+                    if (currentSystemState.manual_pump === 0) {
+                        clientManualChrono++;
+                    } else {
+                        clientManualChrono = 0;
+                    }
+                }
+                updateLcdDisplay(currentSystemState);
+            }
+        }, 1000);
+
+        // Uptime minute counter
+        setInterval(() => {
+            clientUptime++;
+        }, 60000);
+
+        // Rendu du texte et du rétroéclairage LCD
+        function updateLcdDisplay(state) {
+            const lcdScreen = document.getElementById('lcd-screen');
+            const line1El = document.getElementById('lcd-line-1');
+            const line2El = document.getElementById('lcd-line-2');
+            
+            const isOff = (state.led_red === 1 && state.led_green === 0);
+            
+            if (isOff) {
+                // Mode Veille : Extinction rétroéclairage après 4s
+                if (clientOffSeconds > 4) {
+                    lcdScreen.classList.add('off');
+                } else {
+                    lcdScreen.classList.remove('off');
+                }
+                
+                let line1 = "  MODE VEILLE   ";
+                let line2 = "   Zz.z.z.z..   ";
+                if (clientOffSlide === 1) {
+                    line2 = " POMPE INACTIVE ";
+                }
+                
+                // Signalement d'action refusée en mode veille
+                if (state.manual_pump === 0 || state.info_mode === 0) {
+                    line1 = " ACTION REFUSEE ";
+                    if (new Date().getSeconds() % 2 === 0) {
+                        line2 = " ACTIVEZ BOUTON1";
+                    } else {
+                        line2 = " SYSTEME SUR OFF";
+                    }
+                    lcdScreen.classList.remove('off'); // Réactive la lumière
+                }
+                
+                line1El.textContent = line1;
+                line2El.textContent = line2;
+            } else {
+                // Mode Actif
+                lcdScreen.classList.remove('off');
+                clientOffSeconds = 0;
+                
+                let line1 = "";
+                let line2 = "";
+                
+                const isManualPump = (state.manual_pump === 0);
+                const isInfoMode = (state.info_mode === 0);
+                
+                if (isManualPump) {
+                    line1 = " FORCAGE MANUEL ";
+                    let mins = Math.floor(clientManualChrono / 60);
+                    let secs = clientManualChrono % 60;
+                    line2 = ` DURIE: ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s `;
+                } else if (isInfoMode) {
+                    // Diaporama
+                    if (clientInfoSlide === 0) {
+                        line1 = `DATE: ${state.last_sync_date}/2026`;
+                        if (new Date().getSeconds() % 2 === 0) {
+                            line2 = `HEURE: ${state.last_sync_time}:` + String(new Date().getSeconds()).padStart(2, '0');
+                        } else {
+                            line2 = `HEURE: ${state.last_sync_time.replace(':', ' ')} ` + String(new Date().getSeconds()).padStart(2, '0');
+                        }
+                    } else if (clientInfoSlide === 1) {
+                        let rawAdc = 4095 - Math.round((state.humidity || 0) * 33);
+                        if (rawAdc < 750) rawAdc = 750;
+                        if (rawAdc > 4095) rawAdc = 4095;
+                        line1 = `BRUT ADC: ${String(rawAdc).padStart(4, '0')}  `;
+                        line2 = `RELAIS: ${state.pump ? "ACTIVE  " : "FERME   "}`;
+                    } else if (clientInfoSlide === 2) {
+                        line1 = "CIBLE : 40%-85% ";
+                        line2 = "CAPTEUR : OK    ";
+                    } else {
+                        line1 = "UPTIME (Heures) ";
+                        let hrs = Math.floor(clientUptime / 60);
+                        let mins = clientUptime % 60;
+                        line2 = `-> ${String(hrs).padStart(4, '0')} h ${String(mins).padStart(2, '0')} m  `;
+                    }
+                } else {
+                    // Dashboard Normal
+                    line1 = `TERRE : ${String(state.humidity || 0).padStart(3, ' ')}%    `;
+                    line2 = state.pump ? "-> ARROSAGE...  " : "-> SYSTEME OK   ";
+                }
+                
+                line1El.textContent = line1;
+                line2El.textContent = line2;
+            }
+        }
+
+        // Récupérer l'historique et mettre à jour le graphique
         async function fetchChartData() {
             try {
                 const response = await fetch('/api/data');
                 const data = await response.json();
 
-                // Extraction des labels (Heure) et des valeurs
                 const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
                 const values = data.map(d => d.value);
 
                 humidityChart.data.labels = labels;
                 humidityChart.data.datasets[0].data = values;
                 humidityChart.update();
+
+                // Affichage de la date et l'heure de la dernière requête d'humidité
+                if (data && data.length > 0) {
+                    const lastLog = data[data.length - 1];
+                    const lastDateObj = new Date(lastLog.timestamp);
+                    const formattedDate = lastDateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const formattedTime = lastDateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    document.getElementById('last-hum-req-time').textContent = `${formattedDate} à ${formattedTime}`;
+                } else {
+                    document.getElementById('last-hum-req-time').textContent = "Aucune donnée";
+                }
             } catch (error) {
                 console.error("Erreur lors de la mise à jour du graphique:", error);
             }
         }
 
-        // Fonction pour envoyer un ordre depuis les boutons
+        // Envoyer une commande
         async function setButton(name, value) {
             try {
-                await fetch(`/api/button/${name}`, {
+                const response = await fetch(`/api/button/${name}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ value })
                 });
-                updateUIState(name, value);
+                if (response.ok) {
+                    updateUIState(name, value);
+                } else {
+                    const err = await response.json();
+                    console.warn(err.error);
+                }
             } catch (error) {
                 console.error("Erreur lors de l'envoi de la commande:", error);
             }
         }
 
-        // Met à jour visuellement les boutons actifs (bordures blanches)
+        // Sélection visuelle du bouton actif
         function updateUIState(name, value) {
             const card = document.getElementById(`card-${name}`);
             const buttons = card.querySelectorAll('button');
             buttons.forEach(btn => btn.classList.remove('active'));
-            buttons[value].classList.add('active'); // Les boutons sont dans l'ordre 0, 1, 2 dans le HTML
+            buttons[value].classList.add('active');
         }
 
-        // Fonction pour récupérer l'état actuel depuis le serveur et mettre à jour les boutons
+        // Récupérer l'état complet du serveur
         async function fetchStateData() {
             try {
                 const stateRes = await fetch('/api/state');
                 const state = await stateRes.json();
+                currentSystemState = state;
 
                 updateUIState('sys_off', state.sys_off);
                 updateUIState('manual_pump', state.manual_pump);
                 updateUIState('info_mode', state.info_mode);
+
+                // Mise à jour visuelle des LED lumineuses et de la Pompe
+                const ledGreen = document.getElementById('led-green-light');
+                if (state.led_green) ledGreen.classList.add('active');
+                else ledGreen.classList.remove('active');
+
+                const ledRed = document.getElementById('led-red-light');
+                if (state.led_red) ledRed.classList.add('active');
+                else ledRed.classList.remove('active');
+
+                const pumpLight = document.getElementById('pump-light');
+                if (state.pump) pumpLight.classList.add('active');
+                else pumpLight.classList.remove('active');
+
+                // Mise à jour de l'heure et date de synchronisation
+                const syncLbl = document.getElementById('sync-time-lbl');
+                if (state.last_sync_time !== "--:--") {
+                    syncLbl.textContent = `${state.last_sync_time} (${state.last_sync_date})`;
+                } else {
+                    syncLbl.textContent = "Non synchronisé";
+                }
+
+                // Synchro menu déroulant
+                const selectEl = document.getElementById('pollRate');
+                const selectVal = (state.poll_interval * 1000).toString();
+                if (selectEl.value !== selectVal) {
+                    selectEl.value = selectVal;
+                    updatePollingRate(false);
+                }
             } catch (error) {
                 console.error("Erreur lors de la récupération de l'état:", error);
             }
@@ -263,35 +746,38 @@
         let stateInterval;
         let chartInterval;
 
-        // Met à jour la fréquence d'interrogation du serveur
-        function updatePollingRate() {
-            // Nettoie les anciens chronomètres
+        // Mise à jour de l'intervalle client
+        async function updatePollingRate(propagateToServer) {
             clearInterval(stateInterval);
             clearInterval(chartInterval);
             
             const rate = parseInt(document.getElementById('pollRate').value);
             
             if (rate > 0) {
-                // Relance avec la nouvelle fréquence
                 stateInterval = setInterval(fetchStateData, rate);
                 chartInterval = setInterval(fetchChartData, rate);
-                console.log(`[SYS] Fréquence d'actualisation réglée sur ${rate}ms`);
-            } else {
-                console.log(`[SYS] Actualisation automatique désactivée`);
+                
+                if (propagateToServer) {
+                    try {
+                        await fetch('/api/polling-rate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ rate: rate / 1000 })
+                        });
+                    } catch (error) {
+                        console.error("Erreur lors de la mise à jour de la fréquence sur le serveur:", error);
+                    }
+                }
             }
         }
 
-        // Actualise la page (État actuel et Graphique)
-        function initDashboard() {
-            // Première récupération immédiate
-            fetchStateData();
+        // Lancement initial
+        async function initDashboard() {
+            await fetchStateData();
             fetchChartData();
-
-            // Initialise le polling avec la valeur du menu déroulant
-            updatePollingRate();
+            updatePollingRate(false);
         }
 
-        // Lancement
         window.onload = initDashboard;
     </script>
 </body>
