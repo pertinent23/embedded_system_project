@@ -3,12 +3,14 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>embedded_system</name>
-            <creation-uuid>cf63a376-c544-485a-91fa-66bab17cabeb</creation-uuid>
+            <name>embedded-system</name>
+            <creation-uuid>f926a84b-a26d-4886-8c8b-0f471e8eddd3</creation-uuid>
             <make-project-type>0</make-project-type>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
-            <sourceRootList/>
+            <sourceRootList>
+                <sourceRootElem>asm</sourceRootElem>
+            </sourceRootList>
             <confList>
                 <confElem>
                     <name>default</name>
